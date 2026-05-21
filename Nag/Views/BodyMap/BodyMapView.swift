@@ -5,16 +5,15 @@ struct BodyMapView: View {
     @Query private var issues: [Issue]
     @Environment(\.modelContext) private var modelContext
 
-    @State private var mapSide: BodyMapSide    = .front
-    @State private var selectedIssue: Issue?   = nil
-    @State private var showAddIssue            = false
-    @State private var showConfetti            = false  // TODO: wire up ConfettiView
+    @State private var mapSide: BodyMapSide  = .front
+    @State private var selectedIssue: Issue? = nil
+    @State private var showAddIssue          = false
+    @State private var showConfetti          = false  // TODO: wire up ConfettiView
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 20) {
-                    // Front / Back toggle
                     Picker("Side", selection: $mapSide) {
                         Text("Front").tag(BodyMapSide.front)
                         Text("Back").tag(BodyMapSide.back)
@@ -22,7 +21,6 @@ struct BodyMapView: View {
                     .pickerStyle(.segmented)
                     .padding(.horizontal)
 
-                    // Body illustration with heat spots
                     BodyIllustrationView(
                         issues: issues,
                         side: mapSide,
@@ -31,7 +29,6 @@ struct BodyMapView: View {
                     .frame(height: 420)
                     .padding(.horizontal)
 
-                    // Theme area and Other issues
                     ThemeAreaSectionView(
                         issues: issues,
                         onSelectIssue: { selectedIssue = $0 }
@@ -43,9 +40,7 @@ struct BodyMapView: View {
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        showAddIssue = true
-                    } label: {
+                    Button { showAddIssue = true } label: {
                         Image(systemName: "plus")
                     }
                     .disabled(activeIssueCount >= 7)
@@ -53,12 +48,12 @@ struct BodyMapView: View {
             }
         }
         .sheet(item: $selectedIssue) { issue in
-            IssueDetailSheet(issue: issue) {
-                showConfetti = true
-            }
-            .presentationDetents([.medium, .large])
+            IssueDetailSheet(issue: issue) { showConfetti = true }
+                .presentationDetents([.medium, .large])
         }
-        // showAddIssue sheet wired up in a later phase (issue entry flow)
+        .sheet(isPresented: $showAddIssue) {
+            AddIssueView()
+        }
     }
 
     private var activeIssueCount: Int {
