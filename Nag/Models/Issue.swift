@@ -4,7 +4,6 @@ import SwiftData
 @Model
 final class Issue {
 
-    @Attribute(.unique) var id: UUID
     var bodyPart: BodyPart
     var specificIssue: String
     var status: IssueStatus
@@ -13,18 +12,14 @@ final class Issue {
     var resolvedDate: Date?
 
     init(bodyPart: BodyPart, specificIssue: String) {
-        self.id           = UUID()
-        self.bodyPart     = bodyPart
+        self.bodyPart      = bodyPart
         self.specificIssue = specificIssue
-        self.status       = .noActionTaken
-        self.dateAdded    = Date()
-        self.snoozeUntil  = nil
-        self.resolvedDate = nil
+        self.status        = .noActionTaken
+        self.dateAdded     = Date()
     }
 
     var isResolved: Bool { status == .allFixed }
 
-    // True if this issue should currently fire notifications.
     var isActiveForNotifications: Bool {
         guard status != .allFixed else { return false }
         guard let snoozeUntil else { return true }

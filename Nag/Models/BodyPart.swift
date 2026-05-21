@@ -15,7 +15,7 @@ enum BodyPartGroup: String, CaseIterable {
     case other          = "Other"
 }
 
-enum BodyMapSide {
+enum BodyMapSide: Hashable {
     case front, back
 }
 
@@ -61,7 +61,7 @@ enum BodyPart: String, CaseIterable, Codable, Identifiable {
     case leftToes       = "Left toes"
     case rightToes      = "Right toes"
 
-    // Intimate — shown as theme-area items below the illustration, not pinned to the body
+    // Intimate — shown below the illustration, not pinned to the body
     case penis          = "Penis"
     case vagina         = "Vagina"
     case bum            = "Bum"
@@ -80,7 +80,6 @@ enum BodyPart: String, CaseIterable, Codable, Identifiable {
     case other          = "Other"
 
     var id: String { rawValue }
-
     var displayName: String { rawValue }
 
     var group: BodyPartGroup {
@@ -99,7 +98,7 @@ enum BodyPart: String, CaseIterable, Codable, Identifiable {
         }
     }
 
-    // Theme areas, intimate parts, and Other appear in a list below the illustration rather than as pinned heat spots.
+    // Theme areas, intimate parts, and Other appear in a list below the illustration.
     var isPinnedToBody: Bool {
         switch group {
         case .themeAreas, .intimate, .other: return false
@@ -115,9 +114,8 @@ enum BodyPart: String, CaseIterable, Codable, Identifiable {
     }
 
     // Normalised (0–1) position on the body illustration for heat spot placement.
-    // x=0 is left screen edge, x=1 is right screen edge.
-    // The person's LEFT body parts appear on the screen's RIGHT side (x > 0.5).
-    // These are placeholder coordinates to be calibrated against the final SVG asset.
+    // x=0 is left screen edge, x=1 is right. The person's LEFT side appears on the screen's RIGHT.
+    // Placeholder values — calibrate against the final SVG asset.
     var bodyMapPosition: CGPoint? {
         guard isPinnedToBody else { return nil }
         switch self {
