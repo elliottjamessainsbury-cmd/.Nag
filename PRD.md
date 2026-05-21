@@ -1,6 +1,6 @@
 # Nag — Product Requirements Document
 
-**Version:** 0.2 (Draft)  
+**Version:** 0.3 (Draft)  
 **Date:** 2026-05-21  
 **Status:** In Review
 
@@ -41,13 +41,13 @@ Users add a health issue by specifying, in order:
 2. **Body part** — selected from a predefined list (see 4.2); no free-text entry for body part to keep the body map clean and consistent
 3. **Specific issue** — short free-text description of the problem (e.g. "dry, cracked skin", "dull ache when I lift my arm")
 
-**Issue cap:** Users can have a maximum of **7 active issues** at a time. This keeps the experience focused and the body map readable. Users must resolve or delete an existing issue before adding an eighth.
+**Issue cap:** Users can have a maximum of **7 active issues** at a time. Users must resolve or delete an existing issue before adding an eighth.
 
 ---
 
 ### 4.2 Body Part Selection
 
-Body parts are chosen from a fixed list, organised into groups. This list drives both the issue entry UI and the positioning of heat spots on the body map.
+Body parts are chosen from a fixed list, organised into groups. This list drives both the issue entry UI and the positioning of heat spots on the body map. Left/right variants are positioned on the **correct corresponding side** of the body illustration.
 
 #### Physical Body Parts
 | Group | Options |
@@ -62,37 +62,37 @@ Body parts are chosen from a fixed list, organised into groups. This list drives
 | Feet & toes | Left foot, Right foot, Left toes, Right toes |
 | Intimate | Penis, Vagina, Bum |
 
-#### Theme Areas *(not pinned to the body illustration; shown as a separate row or list)*
+#### Theme Areas *(displayed beneath the body illustration, not pinned to it)*
 Stomach, Gut, Skin issues, Dental, Ears, Nose, Throat, Vision
 
 #### Other
-A catch-all option that sits beneath the body illustration on the body map, for anything that doesn't fit the above.
+A catch-all that sits beneath the body illustration, for anything not covered above.
 
 ---
 
 ### 4.3 Body Map
 
-The home screen displays an outline illustration of a human body (front and back view, toggled). Issues are rendered as **heat spots** — glowing, pulsing circles — positioned on the relevant body part.
+The home screen displays an outline illustration of a human body (front and back, toggled). Issues are rendered as **heat spots** — glowing, pulsing circles — positioned on the relevant body part.
 
 - Heat spot colour reflects issue status (red / amber / green — see 4.4)
-- Theme Area and Other issues are displayed in a small list or icon row beneath the body illustration
-- Tapping a heat spot (or a Theme Area item) opens the **Issue Detail Sheet** (see 4.5)
-- Illustration style: clean, minimal — medical diagram meets modern app UI; not clinical or scary
-- **Resolved (green) issues remain on the body map** as a visual record of what the user has fixed; they appear at reduced opacity or with a distinct 'completed' style to distinguish them from active issues
+- Left/right body parts appear on the anatomically correct side of the illustration
+- Theme Area and Other issues are displayed in a list or icon row beneath the illustration
+- Tapping a heat spot or Theme Area item opens the **Issue Detail Sheet** (see 4.5)
+- **Resolved (green) issues remain on the body map** permanently as trophy spots, rendered at reduced opacity or with a distinct 'completed' style to distinguish them from active issues. There is no option to hide them in MVP — they are a feature, not clutter.
 
 ---
 
 ### 4.4 Issue Status Model
 
-Status is set by the user and reflects the **action they've taken**, not the clinical severity. Users update their status from the Issue Detail Sheet.
+Status reflects the **action taken**, not clinical severity. Users update status from the Issue Detail Sheet.
 
-| Status | Colour | Label | Meaning | Notification behaviour |
-|--------|--------|-------|---------|----------------------|
-| No action taken | 🔴 Red | "No action taken" | Default state when an issue is first added | Full nagging frequency |
-| In progress | 🟠 Amber | "In progress" | User has taken a step (booked appointment, bought a product, etc.) | Reduced frequency (50% of base) |
-| All fixed! | 🟢 Green | "All fixed!" | Issue resolved | Notifications stop; issue becomes a trophy on the body map |
+| Status | Colour | Label | Default? | Notification behaviour |
+|--------|--------|-------|----------|----------------------|
+| No action taken | 🔴 Red | "No action taken" | Yes — set automatically on issue creation | Full nagging frequency |
+| In progress | 🟠 Amber | "In progress" | — | 50% of base frequency |
+| All fixed! | 🟢 Green | "All fixed!" | — | Notifications stop; issue becomes a trophy |
 
-**Escalation rule:** Notifications are weighted by status. Red issues are nagged at the full configured frequency. Amber issues receive approximately half as many reminders. Green issues receive none. If a user has a mix of red and amber issues, the notification scheduler prioritises red ones.
+**Escalation:** If a user has multiple active issues, the notification scheduler prioritises red issues over amber ones proportionally.
 
 ---
 
@@ -103,12 +103,12 @@ Tapping a heat spot or Theme Area item opens a bottom sheet showing:
 - Body part and specific issue description
 - Current status (colour + label)
 - Date added / days active
-- **Status update buttons** — "No action taken" / "In progress" / "All fixed!" — tapping one updates the status immediately
-- **Snooze** — pause notifications for this specific issue for a user-selected period (1 day, 3 days, 1 week). A small label on the heat spot indicates a snoozed issue. Useful when the user has booked an appointment and doesn't want to be nagged in the meantime.
+- **Status update buttons** — "No action taken" / "In progress" / "All fixed!" — tapping updates immediately
+- **Snooze** — pauses notifications for this issue for a fixed period. Options: **1 day, 3 days, 1 week**. No custom date option in MVP. A small indicator on the heat spot shows the issue is snoozed.
 - **Edit** — update the specific issue description
-- **Delete** — remove the issue entirely (with confirmation prompt)
+- **Delete** — remove the issue entirely (confirmation prompt required)
 
-When a user taps **"All fixed!"**, the app triggers a **confetti celebration** — a full-screen burst of confetti — before returning them to the body map, where the issue now appears as a green trophy spot.
+When a user taps **"All fixed!"**, the app triggers a **confetti celebration** — a full-screen burst of confetti — before returning to the body map, where the issue now appears as a green trophy spot.
 
 ---
 
@@ -116,62 +116,60 @@ When a user taps **"All fixed!"**, the app triggers a **confetti celebration** �
 
 Users choose a global base daily notification frequency:
 
-| Option | Notifications per day (red issues) |
-|--------|-----------------------------------|
-| Low    | 10                                |
-| Medium | 20                                |
-| High   | 30                                |
+| Option | Notifications per day (red issues) | Amber issues |
+|--------|------------------------------------|--------------|
+| Low    | 10                                 | ~5           |
+| Medium | 20                                 | ~10          |
+| High   | 30                                 | ~15          |
 
-Amber issues receive ~50% of the above. Notifications are distributed equally across the user's active window (see 4.7). If the user has multiple active issues, the scheduler cycles through them proportionally by status weight.
+Notifications are distributed equally across the user's active window (see 4.7).
 
 ---
 
 ### 4.7 Notifications — Active Window
 
-Users set:
-
-- **Wake-up time** — earliest time a notification can be sent
-- **Sleep time** — latest time a notification can be sent
-
-No notifications are sent outside this window. Notifications are pre-scheduled at equal intervals each morning when the window opens.
+Users set a **wake-up time** and **sleep time**. No notifications are sent outside this window. Notifications are pre-scheduled at equal intervals each morning when the window opens.
 
 *Example: 20 notifications/day, 7am–10pm (15-hour window) = one notification every 45 minutes.*
 
 ---
 
-### 4.8 Notification Tone
+### 4.8 Notification Tone & Copy
 
-Users choose between two tones, applied globally:
+Users choose between two tones, applied globally.
+
+#### Copy structure
+All notification templates use simple variable substitution:
+- `{name}` — the user's name from onboarding
+- `{body_part}` — the body part label from the fixed list (e.g. "left knee", "lower back")
+
+**Minimum copy bank: 30 unique templates per tone.** For V1, body part names are swapped directly into templates (e.g. *"Elliott, have you checked that left knee yet?"*). More contextual, symptom-aware copy is a post-MVP consideration.
 
 #### Sassy (default)
-Quirky, cheeky, mildly confrontational. Personalised with the user's name where it lands naturally. Examples:
+Quirky, cheeky, mildly confrontational. Examples:
 
-- *"YOU'RE 40, ELLIOTT. It's embarrassing to still be putting off a doctor's visit."*
-- *"Come on, [name]. I'm getting bored of you ignoring that crusty elbow."*
-- *"Your shoulder didn't fix itself last week either. Just saying."*
-- *"Dry hands. Day 47. This is genuinely your fault at this point, [name]."*
+- *"{name}, have you sorted that {body_part} yet? No? Thought so."*
+- *"Still ignoring that {body_part}, {name}? Bold strategy."*
+- *"Day [n]. {body_part}. Still there. Still waiting. Still your fault."*
+- *"YOU'RE AN ADULT, {name}. The {body_part} isn't going to fix itself."*
 
 #### Calm
-Supportive, gentle, motivational. Still persistent but without the edge. Examples:
+Supportive, gentle, motivational. Examples:
 
-- *"Have you checked in on your elbow today, [name]?"*
-- *"You'll feel so much better after you get that sore shoulder looked at. Time to call your GP?"*
-- *"A small step today could save a bigger problem later. Just a nudge."*
-
-Notification copy uses the user's name and the specific body part / issue where possible.
+- *"{name}, have you checked in on your {body_part} today?"*
+- *"A small step on that {body_part} today could save a bigger problem later."*
+- *"You'll feel so much better once you've dealt with that {body_part}. Just a nudge."*
 
 ---
 
 ## 5. Onboarding
 
-First-launch onboarding collects everything needed to personalise and configure the experience:
-
 1. **Welcome screen** — pithy, honest, funny one-liner about what Nag is
-2. **Guardrails disclaimer** — prominent, must be explicitly acknowledged (see Section 7)
+2. **Guardrails disclaimer** — must be explicitly acknowledged (see Section 7)
 3. **Age confirmation** — "I confirm I am 18 or older"
-4. **Name entry** — "What should we call you?" (used in notification copy)
-5. **Add first issue** — guided flow through body part selection → specific issue description → initial status
-6. **Notification setup** — frequency (10 / 20 / 30), active window (wake / sleep times), tone (Sassy / Calm)
+4. **Name entry** — "What should we call you?" (used in all notification copy)
+5. **Add first issue** — guided: body part selection → specific issue description
+6. **Notification setup** — frequency (10 / 20 / 30), active window, tone (Sassy / Calm)
 7. **iOS notification permission prompt**
 
 ---
@@ -182,30 +180,25 @@ First-launch onboarding collects everything needed to personalise and configure 
 - **Notification frequency** (10 / 20 / 30 per day)
 - **Active window** (wake-up time / sleep time)
 - **Notification tone** (Sassy / Calm)
-- **Manage issues** — view all active and resolved issues, edit, snooze, or delete
+- **Manage issues** — view all active and resolved issues; edit, snooze, or delete
 - **About / Legal** — guardrails, privacy policy, terms
-- **Emergency reminder** — persistent link to Section 7.4 copy
+- **Emergency reminder** — always-accessible link to emergency signposting copy
 
 ---
 
 ## 7. Guardrails & Responsible Use
 
-These are non-negotiable product requirements, not afterthoughts.
-
 ### 7.1 Medical Disclaimer
-Nag does **not** provide medical advice, diagnoses, or treatment recommendations. It is a reminder tool only. This must be surfaced:
-- During onboarding (with explicit acknowledgement)
-- In the app's About / Legal section
-- In App Store metadata
+Nag does **not** provide medical advice, diagnoses, or treatment recommendations. Surfaced in onboarding (explicit acknowledgement required), About / Legal, and App Store metadata.
 
 ### 7.2 Age Gate
-The app is **18+ only**. Age confirmation is required during onboarding. App Store age rating set accordingly.
+**18+ only.** Age confirmation required during onboarding. App Store age rating set accordingly.
 
 ### 7.3 Scope Framing
-Nag is explicitly for **small, annoying, fixable issues** — the kind that are easy to defer but not urgent. It is not designed for serious, acute, or rapidly worsening conditions. This framing must appear during onboarding and in Issue Entry copy.
+Nag is for **small, annoying, fixable issues** only — not for serious, acute, or rapidly worsening conditions. This framing appears in onboarding and Issue Entry copy.
 
 ### 7.4 Emergency Signposting
-Surfaced in onboarding, Settings, and the Issue Entry flow:
+Surfaced in onboarding, Settings, and Issue Entry:
 
 > *If you're experiencing a medical emergency, call 999 or go to your nearest A&E immediately. Do not use this app to assess or manage serious symptoms.*
 
@@ -214,12 +207,14 @@ Surfaced in onboarding, Settings, and the Issue Entry flow:
 ## 8. Non-Goals (MVP)
 
 - No symptom tracking or health data analytics
-- No integration with NHS, GP booking systems, or health APIs
+- No NHS / GP booking integration
 - No AI-generated health advice or triage
 - No social / sharing features
 - No Android version (iOS first)
-- No per-issue notification tone or frequency customisation (post-MVP)
-- No backend / account system at launch (local storage only)
+- No per-issue notification tone or frequency customisation
+- No backend / account system (local storage only)
+- No custom snooze duration (fixed options only: 1d / 3d / 1w)
+- No option to hide resolved green issues
 
 ---
 
@@ -229,39 +224,35 @@ Surfaced in onboarding, Settings, and the Issue Entry flow:
 |--------|------------------------------|
 | Downloads | TBD |
 | Day-7 retention | > 40% |
-| Issues marked as "All fixed!" | > 30% of issues added |
+| Issues marked "All fixed!" | > 30% of issues added |
 | Avg notifications enabled per user | > 10/day |
 | App Store rating | ≥ 4.2 ★ |
-| Support tickets related to medical advice requests | 0 |
+| Support tickets re: medical advice | 0 |
 
 ---
 
 ## 10. Open Questions
 
-1. **Snooze duration options** — 1 day / 3 days / 1 week feels right; should there be a custom option ("until a specific date")?
-2. **Tone per issue** — post-MVP, allow tone to be set per issue rather than globally?
-3. **Left/right body parts** — should the body map distinguish left vs right visually (i.e. heat spot appears on the correct side of the illustration)?
-4. **Resolved issue visibility** — should the user be able to hide their resolved (green trophy) issues, or is the permanent record always shown?
-5. **Notification copy bank size** — how many unique message templates are needed before repetition becomes annoying? Suggested minimum: 30 per body-part category per tone.
+1. **Tone per issue** — post-MVP: allow tone to be set per issue rather than globally?
 
 ---
 
 ## 11. Technical Considerations
 
 - **Platform:** iOS (SwiftUI)
-- **Notifications:** iOS `UserNotifications` framework; pre-schedule the full day's notifications each morning at wake-up time; reschedule on status change or snooze
-- **Storage:** Local only (SwiftData); no backend required for MVP
-- **Body map:** SVG-based illustration with predefined tappable regions mapped to the body part list; left/right variants handled by mirroring or separate SVG layers
-- **Notification scheduler:** Weight notifications by issue status (red = full, amber = 50%, green = 0%); distribute within active window at equal intervals
-- **Confetti:** Implement with a lightweight particle system (e.g. `SPConfetti` or a custom SwiftUI particle view)
-- **Notification copy:** Template strings with `{name}` and `{body_part}` placeholders; curated bank of messages per tone per body-part group
+- **Notifications:** iOS `UserNotifications` framework; pre-schedule the full day's notifications at wake-up time each morning; reschedule on status change, snooze, or issue deletion
+- **Storage:** Local only (SwiftData); no backend for MVP
+- **Body map:** SVG illustration with predefined tappable regions mapped to the body part list; left/right variants positioned on correct sides via separate SVG regions or coordinate mapping
+- **Notification scheduler:** Weight by status (red = full, amber = 50%, green = 0%); distribute within active window at equal intervals; cycle through issues proportionally
+- **Confetti:** Lightweight particle system (e.g. `SPConfetti` or custom SwiftUI particles)
+- **Notification copy:** 30+ template strings per tone with `{name}` and `{body_part}` substitution; grouped by tone, not by body part in V1
 
 ---
 
 ## 12. Design Principles
 
-- **Deliberately annoying, never distressing** — the tone should make users laugh, not anxious
+- **Deliberately annoying, never distressing** — tone should make users laugh, not anxious
 - **Fast to add an issue** — target < 30 seconds from open to first issue logged
-- **Satisfying to resolve** — "All fixed!" should feel genuinely rewarding; the confetti and the trophy spot are part of the product, not polish
+- **Satisfying to resolve** — "All fixed!" should feel genuinely rewarding; confetti and the trophy spot are core product, not polish
+- **The body map is the home screen** — beautiful, glanceable, tells the user's full health-nag story at a glance
 - **Honest about what it is** — no dark patterns, no medicalisation, no false authority
-- **The body map is the home screen** — it should be beautiful, glanceable, and tell the user's full health-nag story at a glance
