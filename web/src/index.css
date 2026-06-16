@@ -15,7 +15,26 @@ body {
   0%   { transform: translateY(-20px) rotate(0deg); opacity: 1; }
   100% { transform: translateY(900px) rotate(360deg); opacity: 0; }
 }
-
 .confetti-piece {
   animation: fall linear forwards;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  15%       { transform: translateX(-5px) rotate(-1deg); }
+  30%       { transform: translateX(5px) rotate(1deg); }
+  45%       { transform: translateX(-4px); }
+  60%       { transform: translateX(4px); }
+  75%       { transform: translateX(-2px); }
+}
+.shake {
+  animation: shake 0.45s ease-in-out;
+}
+
+@keyframes sparkle-in {
+  0%   { opacity: 0; transform: scale(0.95) translateY(-4px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+.sparkle-in {
+  animation: sparkle-in 0.35s ease-out forwards;
 }

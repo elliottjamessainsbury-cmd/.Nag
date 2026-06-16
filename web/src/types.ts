@@ -1,5 +1,11 @@
 export type IssueStatus = 'noActionTaken' | 'inProgress' | 'allFixed'
 
+export type NotificationFrequency =
+  | 'twicePerDay'
+  | 'everyTwoHours'
+  | 'oncePerHour'
+  | 'twicePerHour'
+
 export interface Issue {
   id: string
   bodyPartId: string
@@ -13,8 +19,8 @@ export interface Issue {
 export interface UserSettings {
   userName: string
   hasCompletedOnboarding: boolean
-  notificationFrequency: 'low' | 'medium' | 'high'
+  notificationFrequency: NotificationFrequency
   notificationTone: 'sassy' | 'calm'
-  wakeUpTime: string
-  sleepTime: string
+  notificationStartTime: string // 'HH:MM'
+  notificationEndTime: string   // 'HH:MM'
 }

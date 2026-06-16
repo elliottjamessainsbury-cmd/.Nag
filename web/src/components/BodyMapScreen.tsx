@@ -30,9 +30,13 @@ interface Props {
   userName: string
   onSelectIssue: (id: string) => void
   onAddIssue: () => void
+  onOpenSettings: () => void
+  onDemoNotification: () => void
 }
 
-export default function BodyMapScreen({ issues, onSelectIssue, onAddIssue }: Props) {
+export default function BodyMapScreen({
+  issues, onSelectIssue, onAddIssue, onOpenSettings, onDemoNotification,
+}: Props) {
   const [side, setSide] = useState<Side>('front')
   const activeCount = issues.filter(i => i.status !== 'allFixed').length
 
@@ -44,10 +48,22 @@ export default function BodyMapScreen({ issues, onSelectIssue, onAddIssue }: Pro
       {/* Nav */}
       <div className="flex items-center justify-between px-5 py-3">
         <h1 className="text-3xl font-black">Nag</h1>
-        <button onClick={onAddIssue} disabled={activeCount >= 7}
-          className="w-9 h-9 bg-red-500 disabled:bg-gray-200 rounded-full flex items-center justify-center text-white text-2xl leading-none transition-colors">
-          +
-        </button>
+        <div className="flex items-center gap-2">
+          <button onClick={onDemoNotification}
+            title="Preview a notification"
+            className="w-9 h-9 bg-gray-100 rounded-full flex items-center justify-center text-base">
+            &#128276;
+          </button>
+          <button onClick={onOpenSettings}
+            title="Settings"
+            className="w-9 h-9 bg-gray-100 rounded-full flex items-center justify-center text-base">
+            &#9881;
+          </button>
+          <button onClick={onAddIssue} disabled={activeCount >= 7}
+            className="w-9 h-9 bg-red-500 disabled:bg-gray-200 rounded-full flex items-center justify-center text-white text-2xl leading-none transition-colors">
+            +
+          </button>
+        </div>
       </div>
 
       {/* Toggle */}
@@ -62,9 +78,8 @@ export default function BodyMapScreen({ issues, onSelectIssue, onAddIssue }: Pro
         </div>
       </div>
 
-      {/* Body + theme areas */}
+      {/* Body + lists */}
       <div className="flex-1 overflow-y-auto">
-        {/* Silhouette */}
         <div className="relative mx-auto" style={{ width: 220, height: 360 }}>
           <BodySVG side={side} />
           {pinned.map(issue => {
@@ -88,14 +103,10 @@ export default function BodyMapScreen({ issues, onSelectIssue, onAddIssue }: Pro
           })}
         </div>
 
-        {/* Empty state */}
         {issues.length === 0 && (
-          <p className="text-center text-gray-400 text-sm py-2">
-            No issues logged yet. Tap + to add one.
-          </p>
+          <p className="text-center text-gray-400 text-sm py-2">No issues logged yet. Tap + to add one.</p>
         )}
 
-        {/* Unpinned / theme areas */}
         {unpinned.length > 0 && (
           <div className="px-4 pb-6">
             <p className="text-xs text-gray-400 font-medium uppercase tracking-wide mb-2 px-1">Other areas</p>
